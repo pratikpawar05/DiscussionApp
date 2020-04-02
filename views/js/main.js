@@ -9,10 +9,11 @@ socket.on('message', message => {
   //console.log(message.text);
   outputsMessage(message);
 });
-socket.on('welcome', message => {
-  console.log(message);
-  welcomeMessage(message);
-});
+
+// socket.on('welcome', message => {
+//   console.log(message);
+//   welcomeMessage(message);
+// });
 
 // Get room and users
 socket.on('roomUsers', ({
@@ -70,11 +71,12 @@ function outputsMessage(message) {
   chatMessages.append(items.join(''));
 }
 
-// Show A Div For Few Seconds
-function welcomeMessage(message) {
-  chatMessages.append(
-    setTimeout(function() { $('<div class="message">').append(
-      '<p class="meta">' + message.username + '  <span>' + message.time +
-      '</span></p><p class="text">' + message.text + '</p>').fadeOut('fast'); 
-    }, 5000));
-}
+//Try After Some Time
+// // Show A Div For Few Seconds
+// function welcomeMessage(message) {
+//   chatMessages.append(
+//     setTimeout(function() { $('<div class="message">').append(
+//       '<p class="meta">' + message.username + '  <span>' + message.time +
+//       '</span></p><p class="text">' + message.text + '</p>').fadeOut('fast'); 
+//     }, 5000));
+// }

@@ -16,7 +16,7 @@ const GroupChatSchema = new Schema({
     },
     date: {
         type: String,
-        default: moment().format('h:mm a'),
+        default: moment().format('MMMM Do YYYY, h:mm:ss a'),
     },
 });
 

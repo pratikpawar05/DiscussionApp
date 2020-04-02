@@ -43,7 +43,7 @@ io.on('connection', (socket) => {
 		if (!err) {
 			socket.emit('message', docs);
 			//When User Gets Connected For The First Time
-			socket.emit('welcome', formatMessage(user.username, 'Welcome To Chat App'));
+			socket.emit('messages', formatMessage(user.username, 'Welcome To Chat App'));
 		} else {
 			console.log('Error during record insertion : ' + err);
 		}
