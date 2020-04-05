@@ -118,7 +118,7 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     io.to(user.room).emit(
       "messages",
-      formatMessage(user.username, " Left The Chat ")
+      formatMessage(user.username, [" Left The Chat "])
     );
     userLeave(socket.id);
     // Send users and room info
