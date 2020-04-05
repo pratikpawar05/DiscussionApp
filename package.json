@@ -12,6 +12,8 @@
   "dependencies": {
     "ejs": "^3.0.2",
     "express": "^4.17.1",
+    "express-fileupload": "^1.1.7-alpha.1",
+    "fs": "0.0.1-security",
     "moment": "^2.24.0",
     "mongoose": "^5.9.7",
     "nodemon": "^2.0.2",
