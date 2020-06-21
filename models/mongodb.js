@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const mydb_url = 'mongodb://admin:admin123@localhost:27017/ChatApp?authSource=admin';
+const mydb_url = 'mongodb://localhost:27017/ChatApp?authSource=admin';
 mongoose.connect(mydb_url, {
         useNewUrlParser: true,
         useUnifiedTopology: true

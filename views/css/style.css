@@ -119,10 +119,13 @@ a {
 	display: flex;
 }
 
-.chat-form-container input[type='text'] {
+.chat-form-container #msg {
+	position: relative;
 	font-size: 16px;
 	padding: 5px;
-	height: 40px;
+	height: 60px;
+	width: 100%;
+	font-family: Arial, sans-serif;
 	flex: 1;
 }
 
@@ -186,4 +189,29 @@ a {
 	.chat-sidebar {
 		display: none;
 	}
+}
+textarea{
+	resize: none;
+}
+.btn-file {
+	position: relative;	
+	left: -50px;
+	overflow: hidden;
+	background:none;
+	color:grey;
+	font-size: 20px;
+
+}
+
+.btn-file input[type=file] {
+	position: absolute;
+	top: 0;
+	right: 0;
+	font-size: 100px;
+	text-align: center;
+	filter: alpha(opacity=0);
+	opacity: 0;
+	outline: thick;
+	cursor: inherit;
+	display: block;
 }

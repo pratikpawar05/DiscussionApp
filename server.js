@@ -49,7 +49,7 @@ io.on("connection", (socket) => {
         //When User Gets Connected For The First Time
         socket.emit(
           "messages",
-          formatMessage(user.username, ["Welcome To Chat App"])
+          formatMessage(user.username, [`Welcome To ${room} Discussion Portal!` ])
         );
       } else {
         console.log("Error during record insertion : " + err);
@@ -71,6 +71,7 @@ io.on("connection", (socket) => {
   socket.on("chatMessage", (message) => {
     var file = message[1];
     var fileName = message[2];
+    console.log(file);
     var flag = false
 
 
@@ -80,7 +81,7 @@ io.on("connection", (socket) => {
       fs.writeFile(path + "", file, function (err) {
         if (err) throw err;
         console.log("Saved!");
-        
+
       });
 
 
@@ -106,8 +107,8 @@ io.on("connection", (socket) => {
     });
 
     //Send the message received from the Users to the collection group chats
-    if (flag==true) {
-      io.to(user.room).emit("messages", formatMessage(user.username, [message[0],"img/"+fileName]));
+    if (flag == true) {
+      io.to(user.room).emit("messages", formatMessage(user.username, [message[0], "img/" + fileName]));
     } else {
       console.log("bye")
       io.to(user.room).emit("messages", formatMessage(user.username, [message[0]]));

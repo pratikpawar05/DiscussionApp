@@ -4,6 +4,8 @@ const roomName = $("#room-name");
 
 const socket = io();
 
+
+
 socket.on("message", (message) => {
   //console.log(message.text);
   outputsMessage(message);
@@ -158,3 +160,11 @@ function outputsMessage(message) {
 //       '</span></p><p class="text">' + message.text + '</p>').fadeOut('fast');
 //     }, 5000));
 // }
+
+
+// Run On close of the button..!!
+function close_window(){
+  if (confirm("Leave the discussion?")) {
+      window.open('/',_self)
+    }
+}
