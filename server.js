@@ -3,11 +3,15 @@ const app = express();
 const http = require("http").createServer(app);
 const io = require("socket.io")(http);
 const formatMessage = require("./controller/messages");
+const {
+  GroupChats
+} = require('./models/groupchats.model');
 require("./models/mongodb");
 const mongoose = require("mongoose");
 const fileUpload = require("express-fileupload");
 require("events").EventEmitter.prototype._maxListeners = 0;
 const fs = require("fs");
+const moment = require('moment');
 
 const {
   userJoin,
@@ -15,9 +19,7 @@ const {
   getRoomUsers
 } = require("./controller/users");
 
-//Link To get the GroupChat Model & its Defined Schema In A Variable
-//const Group = mongoose.model('Group');
-const GroupChat = mongoose.model("GroupChat");
+var GroupChat = mongoose.model("GroupChat", GroupChats);
 
 var room = "";
 var username = "";
@@ -40,19 +42,18 @@ app.use(express.static(__dirname + "/views"));
 io.on("connection", (socket) => {
   const user = userJoin(socket.id, username, room);
   socket.join(user.room);
-  GroupChat.find({
-      roomName: user.room,
-    },
+  var GroupChat = mongoose.model("GroupChat", GroupChats, user.room);
+  GroupChat.find({},
     (err, docs) => {
       if (!err) {
         socket.emit("message", docs);
         //When User Gets Connected For The First Time
         socket.emit(
           "messages",
-          formatMessage(user.username, [`Welcome To ${room} Discussion Portal!` ])
+          formatMessage(user.username, [`Welcome To ${room} Discussion Portal!`])
         );
       } else {
-        console.log("Error during record insertion : " + err);
+        console.log("Error during record fetch : " + err);
       }
     }
   );
@@ -81,27 +82,29 @@ io.on("connection", (socket) => {
       fs.writeFile(path + "", file, function (err) {
         if (err) throw err;
         console.log("Saved!");
-
       });
-
-
-      var groupchat = new GroupChat();
-      groupchat.roomName = user.room;
-      groupchat.message = path;
-      groupchat.from = user.username;
-      groupchat.socketId = socket.id;
-      groupchat.save((err) => {
-        if (!err) console.log("Succesful!");
+      var GroupChat = mongoose.model("GroupChat", GroupChats, user.room);
+      GroupChat.collection.insertOne({
+        roomName: user.room,
+        message: path,
+        from: user.username,
+        socketId: socket.id,
+        date:moment().format('MMMM Do YYYY, h:mm:ss a'),
+      }, (err) => {
+        if (!err) console.log("Succesful");
         else console.log("Error during record insertion : " + err);
       });
     }
 
-    var groupchat = new GroupChat();
-    groupchat.roomName = user.room;
-    groupchat.message = message[0];
-    groupchat.from = user.username;
-    groupchat.socketId = socket.id;
-    groupchat.save((err) => {
+
+    var GroupChat = mongoose.model("GroupChat", GroupChats, user.room);
+    GroupChat.collection.insertOne({
+      roomName: user.room,
+      message: message[0],
+      from: user.username,
+      socketId: socket.id,
+      date:moment().format('MMMM Do YYYY, h:mm:ss a'),
+    }, (err) => {
       if (!err) console.log("Succesful");
       else console.log("Error during record insertion : " + err);
     });
@@ -110,7 +113,6 @@ io.on("connection", (socket) => {
     if (flag == true) {
       io.to(user.room).emit("messages", formatMessage(user.username, [message[0], "img/" + fileName]));
     } else {
-      console.log("bye")
       io.to(user.room).emit("messages", formatMessage(user.username, [message[0]]));
     }
   });

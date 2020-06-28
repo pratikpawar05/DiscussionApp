@@ -99,7 +99,6 @@ function outputMessage(message) {
           '"width="100%" height="300px"></iframe><p class="+text+">' +
           message.text[0] +
           "</p>"
-
         )
       );
     }

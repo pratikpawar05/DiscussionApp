@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const moment=require('moment');
+const moment = require('moment');
 const Schema = mongoose.Schema;
 const GroupChatSchema = new Schema({
     from: {
@@ -13,11 +13,15 @@ const GroupChatSchema = new Schema({
     },
     socketId: {
         type: String,
+        default:undefined,
     },
     date: {
         type: String,
         default: moment().format('MMMM Do YYYY, h:mm:ss a'),
     },
+    
 });
 
-module.exports = mongoose.model('GroupChat', GroupChatSchema);
+module.exports = {
+   "GroupChats": GroupChatSchema,
+}

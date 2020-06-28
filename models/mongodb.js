@@ -12,5 +12,4 @@ mongoose.connect(mydb_url, {
         }
     });
 
-require('./groups.model');
-require('./groupchats.model');
+// require('./groupchats.model');
