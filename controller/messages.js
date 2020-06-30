@@ -18,7 +18,7 @@ function createMessage(userName,message=undefined,{file,fileName,fileType,leftCo
         if(fileType=='image'){
             attachment=`<div class="message"><p class="meta">${userName} <span>${moment().format('MMMM Do YYYY,h:mm a')}</span></p>${leftContent} <img src="storage/image/${fileName}" alt="face" height="200" width="100%">${rightContent}</div>`
         }else{
-            attachment=`<div class="message"><p class="meta">${userName} <span>${moment().format('MMMM Do YYYY,h:mm a')}</span></p>${leftContent} <iframe src="storage/application/${fileName}" alt="face" height="300" width="100%">${rightContent}`
+            attachment=`<div class="message"><p class="meta">${userName} <span>${moment().format('MMMM Do YYYY,h:mm a')}</span></p>${leftContent} <iframe src="storage/application/${fileName}" alt="face" height="300" width="100%"></iframe>${rightContent}</div>`
             console.log(attachment)
         }
         return attachment;

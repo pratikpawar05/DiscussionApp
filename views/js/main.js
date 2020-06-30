@@ -84,7 +84,7 @@ chatForm.on("submit", function (e) {
     fileType = attachment.file.type.split('/')[0];
     leftContent = $("trix-editor").html().split('<span data-trix-cursor-target="left" data-trix-serialize="false">')[0]
     rightContent = $("trix-editor").html().split('<span data-trix-cursor-target="right" data-trix-serialize="false">')[1].substring(8)
-    console.log(fileName)
+    console.log(rightContent)
     //Resetting few things after sending the data
     cc = 0;
     attachment = ''
