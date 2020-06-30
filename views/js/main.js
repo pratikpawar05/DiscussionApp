@@ -1,20 +1,25 @@
 const chatForm = $("#chat-form");
 const chatMessages = $(".chat-messages");
 const roomName = $("#room-name");
-
+var trix = document.querySelector("trix-editor")
 const socket = io();
-
-
 
 socket.on("message", (message) => {
   //console.log(message.text);
   outputsMessage(message);
 });
 
-// socket.on('welcome', message => {
-//   console.log(message);
-//   welcomeMessage(message);
-// });
+$(".openSideBar").on("click", function (e) {
+  $(".chat-sidebar").css("display", "block");
+  $(".closeSideBar").css("display", "block");
+  $(".openSideBar").css("display", "none");
+});
+
+$(".closeSideBar").on("click", function (e) {
+  $(".openSideBar").css("display", "inline");
+  $(".closeSideBar").css("display", "none");
+  $(".chat-sidebar").css("display", "none");
+});
 
 // Get room and users
 socket.on("roomUsers", ({
@@ -35,26 +40,68 @@ socket.on("messages", (message) => {
   chatMessages.scrollTop(chatMessages.get(0).scrollHeight);
 });
 
-// Message submit
+socket.on("formattedMessage", (message) => {
+  chatMessages.append(message)
+  chatMessages.scrollTop(chatMessages.get(0).scrollHeight);
+});
+//If user uploads the file get it..inside attachment variable
+//Disable from further upload..!!
+var attachment;
+var temp;
+var cc = 0;
+
+document.addEventListener("trix-file-accept", function (event) {
+  if (cc != 0) {
+    event.preventDefault();
+    alert("Can't add more than 1 image...");
+  }
+  cc += 1
+});
+document.addEventListener("trix-attachment-add", function (event) {
+  attachment = event.attachment;
+  if (attachment.file) {
+    // console.log(attachment.file)
+    $(".trix-button--icon-attach").attr("disabled", true);
+  }
+});
+
+document.addEventListener("trix-attachment-remove", function (event) {
+  attachment = "";
+  cc = 0;
+  $(".trix-button--icon-attach").attr("disabled", false);
+});
+
+// Message submit to backend
 chatForm.on("submit", function (e) {
   e.preventDefault();
-  var file = "";
-  var fileName = "";
-  //Get the input element by ID
-  const msg = $("#msg").val();
+  var file, fileName, fileType, leftContent, rightContent, msg;
+  $(".trix-button--icon-attach").attr("disabled", false);
 
   //Get The File From User
-  var file = document.getElementById("myFile").files[0];
-  if (file != undefined) {
-    var fileName = document.getElementById("myFile").files[0].name;
+  if (attachment) {
+    file = attachment.file;
+    fileName = attachment.file.name;
+    fileType = attachment.file.type.split('/')[0];
+    leftContent = $("trix-editor").html().split('<span data-trix-cursor-target="left" data-trix-serialize="false">')[0]
+    rightContent = $("trix-editor").html().split('<span data-trix-cursor-target="right" data-trix-serialize="false">')[1].substring(8)
+    console.log(fileName)
+    //Resetting few things after sending the data
+    cc = 0;
+    attachment = ''
+    $('#chat-form')[0].reset();
+    // Emit message to server
+    socket.emit("chat_message", [file, fileName, fileType, leftContent, rightContent]);
+  } else {
+    //Only message without atachment
+    msg = $('#msg').val()
+    //Resetting few things after sending the data
+    cc = 0;
+    attachment = ''
+    $('#chat-form')[0].reset();
+    // Emit message to server
+    socket.emit("chat_message", [msg]);
   }
 
-  // Emit message to server
-  socket.emit("chatMessage", [msg, file, fileName]);
-  $("#myFile").val("");
-  // Clear input
-  $("#msg").val("");
-  //  e.target.elements.msg.focus();
 });
 
 // Current Output messages
@@ -72,7 +119,7 @@ function outputMessage(message) {
       )
     );
   } else {
-    if (message.text[1].split('.')[1] != 'pdf') {
+    if (message.text[1].split(".")[1] != "pdf") {
       chatMessages.append(
         $('<div class="message">').append(
           '<p class="meta">' +
@@ -81,13 +128,13 @@ function outputMessage(message) {
           message.time +
           '</span></p><img src="' +
           message.text[1] +
-          '"alt="face" height="100" width="100"><p class="+text+">' +
+          '"alt="face" height="100" width="100"><p class="text">' +
           message.text[0] +
           "</p>"
         )
       );
     } else {
-      console.log(message.text[1])
+      // console.log(message.text[1])
       chatMessages.append(
         $('<div class="message">').append(
           '<p class="meta">' +
@@ -105,7 +152,7 @@ function outputMessage(message) {
   }
 }
 
-// Previous Stored Output messages
+//Display Previous Stored messages from database initially
 function outputsMessage(message) {
   items = [];
   $.each(message, (i, item) => {
@@ -121,7 +168,7 @@ function outputsMessage(message) {
       );
     } else {
       var url = item.message.split("/views/")[1];
-      if (url.split('.')[1] == 'pdf') {
+      if (url.split(".")[1] == "pdf") {
         items.push(
           '<div class="message"><p class="meta">' +
           item.from +
@@ -131,8 +178,7 @@ function outputsMessage(message) {
           url +
           '"width="100%" height="300px"></iframe></div>'
         );
-      }
-      else{
+      } else {
         items.push(
           '<div class="message"><p class="meta">' +
           item.from +
@@ -140,10 +186,9 @@ function outputsMessage(message) {
           item.date +
           '</span></p><img src="' +
           url +
-          '" alt="face" height="100" width="100"></div>'
+          '" alt="face" height="100" width="100%"></div>'
         );
       }
-
     }
   }); // close each()
 
@@ -160,10 +205,15 @@ function outputsMessage(message) {
 //     }, 5000));
 // }
 
+//If any error ,trigger this
+socket.on("alert", (message) => {
+  alert(message)
+});
+
 
 // Run On close of the button..!!
-function close_window(){
+function close_window() {
   if (confirm("Leave the discussion?")) {
-      window.open('/',_self)
-    }
+    window.open("/", _self);
+  }
 }

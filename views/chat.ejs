@@ -9,10 +9,11 @@
       integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk="
       crossorigin="anonymous"
     />
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <link rel="stylesheet" href="css/style.css" />
-
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/trix/1.2.1/trix.css"
+    />
     <title>Chat App</title>
   </head>
 
@@ -27,35 +28,30 @@
       </header>
 
       <main class="chat-main">
+        <span class="openSideBar">&#9776;</span>
         <div class="chat-sidebar">
-          <h3><i class="fas fa-comments"></i> Room Name:</h3>
+          <span class="closeSideBar" style="float: right;">&times;</span>
+          <h3><i class="fas fa-comments"></i> Language Name:</h3>
           <h2 id="room-name">
             <li><%= room %></li>
           </h2>
-          <h3><i class="fas fa-users"></i> Users</h3>
+          <h3><i class="fas fa-users"></i> Active Users:</h3>
           <ul id="users"></ul>
         </div>
-
-        <div class="chat-messages"></div>
+    
+        <div class="chat-messages">
+        </div>
       </main>
+          <!-- <img src="storage/image/Screenshot from 2020-06-14 11-24-15.png"> -->
       <div class="chat-form-container">
-        <form id="chat-form">
-          <Textarea
-            id="msg"
-            type="text"
-            placeholder="Enter Message Here..."
-            
-            required
-          ></Textarea>
-          <label class="btn btn-file">
-            <i class="fas fa-paperclip" aria-hidden="true"></i>
-            <input
-              type="file"
-              style="display: none;"
-              name="files"
-              id="myFile"
-            />
-          </label>
+        <form id="chat-form" enctype="multipart/form-data">
+          <input type="hidden" name="content" id="msg" required />
+          <trix-editor
+            class="trix-content"
+            input="msg"
+            placeholder="Enter Your Message..."
+            :autofocus="autofocus"
+          ></trix-editor>
           <button class="btn"><i class="fas fa-paper-plane"></i>Send</button>
         </form>
       </div>
@@ -66,6 +62,10 @@
       integrity="sha256-TDxXjkAUay70ae/QJBEpGKkpVslXaHHayklIVglFRT4="
       crossorigin="anonymous"
     ></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/trix/1.2.1/trix.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="js/main.js"></script>
     <!-- Bootstrap cdn links -->
@@ -73,11 +73,4 @@
     <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script> -->
   </body>
 
-  <script>
-    // Add the following code if you want the name of the file appear on select
-    $("#myFile").on("change", function () {
-      var fileName = $(this).val().split("\\").pop();
-      alert(fileName);
-    });
-  </script>
 </html>

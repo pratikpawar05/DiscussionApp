@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const http = require("http").createServer(app);
 const io = require("socket.io")(http);
-const formatMessage = require("./controller/messages");
+const{formatMessage,createMessage}= require("./controller/messages");
 const {
   GroupChats
 } = require('./models/groupchats.model');
@@ -20,7 +20,6 @@ const {
 } = require("./controller/users");
 
 var GroupChat = mongoose.model("GroupChat", GroupChats);
-
 var room = "";
 var username = "";
 app.use(fileUpload());
@@ -37,6 +36,7 @@ app.set("view engine", "ejs");
 //Set Static Directory
 
 app.use(express.static(__dirname + "/views"));
+app.use("/storage",express.static(__dirname + "/storage"));
 
 //Socket Complete Logic
 io.on("connection", (socket) => {
@@ -72,13 +72,11 @@ io.on("connection", (socket) => {
   socket.on("chatMessage", (message) => {
     var file = message[1];
     var fileName = message[2];
-    console.log(file);
     var flag = false
 
-
     if (file != undefined) {
-      var path = __dirname + "/views/img/" + fileName;
       flag = true
+      var path = __dirname + "/storage/image/" + fileName;
       fs.writeFile(path + "", file, function (err) {
         if (err) throw err;
         console.log("Saved!");
@@ -116,6 +114,24 @@ io.on("connection", (socket) => {
       io.to(user.room).emit("messages", formatMessage(user.username, [message[0]]));
     }
   });
+
+    //Experiment basis of message handling
+    socket.on("chat_message", (messageData) => {
+      if(messageData.length==1){
+        io.to(user.room).emit("formattedMessage",createMessage(user.username,messageData[0]));
+      }else{
+        path = `${__dirname}/storage/${messageData[2]}/${messageData[1]}`;
+        fs.writeFile(path + "", messageData[0], function (err) {
+          if (err){
+            io.emit("alert",`could not save the ${messageData[1]} plz try again!!`)
+          }else{
+            temp=createMessage(user.username,undefined,{file:messageData[0],fileName:messageData[1],fileType:messageData[2],leftContent:messageData[3],rightContent:messageData[4]})
+            io.to(user.room).emit("formattedMessage",temp)
+            console.log("Saved!");
+          }
+        });
+      }
+    });
 
   //When User Left the chat
   socket.on("disconnect", () => {

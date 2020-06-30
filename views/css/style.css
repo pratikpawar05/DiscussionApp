@@ -14,6 +14,10 @@
 	padding: 0;
 }
 
+trix-editor:empty:not(:focus)::before {
+	color: var(--light-color);
+  }
+
 body {
 	font-family: 'Roboto', sans-serif;
 	font-size: 16px;
@@ -109,24 +113,10 @@ a {
 .chat-messages .message .meta span {
 	color: #777;
 }
-
 .chat-form-container {
 	padding: 20px 30px;
 	background-color: var(--dark-color-a);
-}
-
-.chat-form-container form {
-	display: flex;
-}
-
-.chat-form-container #msg {
 	position: relative;
-	font-size: 16px;
-	padding: 5px;
-	height: 60px;
-	width: 100%;
-	font-family: Arial, sans-serif;
-	flex: 1;
 }
 
 /* Join Page */
@@ -180,7 +170,12 @@ a {
 	margin-top: 20px;
 	width: 100%;
 }
-
+.openSideBar {
+	display: none;
+}
+.closeSideBar {
+display: none;
+}
 @media (max-width: 700px) {
 	.chat-main {
 		display: block;
@@ -188,7 +183,32 @@ a {
 
 	.chat-sidebar {
 		display: none;
+		margin-left: 20px;
+		margin-right: 20px;
+		height: 500px;
+		max-height: 500px;
+		position: absolute;
+		z-index: 1;
+		left: 0;
+		background-color: var(--dark-color-b);
+		overflow-x: hidden;
+		overflow-y: scroll;
+		transition: 0.5s;
 	}
+	.openSideBar {
+		display: block;
+	}
+	.closeSideBar {
+		display: none;
+	}
+	#msg{
+		width: 100%;
+		padding: 0px 0px;
+	}
+	#trix-toolbar-1 {
+		background:#fff;
+		overflow-x:scroll;
+	  }
 }
 textarea{
 	resize: none;
@@ -203,15 +223,3 @@ textarea{
 
 }
 
-.btn-file input[type=file] {
-	position: absolute;
-	top: 0;
-	right: 0;
-	font-size: 100px;
-	text-align: center;
-	filter: alpha(opacity=0);
-	opacity: 0;
-	outline: thick;
-	cursor: inherit;
-	display: block;
-}

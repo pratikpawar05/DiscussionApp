@@ -1,0 +1,31 @@
+<Textarea
+    id="msg"
+    type="text"
+    placeholder="Enter Message Here..."
+    required
+  ></Textarea>
+
+<label class="btn btn-file">
+    <i class="fas fa-paperclip" aria-hidden="true"></i>
+    <input
+      type="file"
+      style="display: none;"
+      name="files"
+      id="myFile"
+    />
+</label>
+
+
+
+.btn-file input[type=file] {
+	position: absolute;
+	top: 0;
+	right: 0;
+	font-size: 100px;
+	text-align: center;
+	filter: alpha(opacity=0);
+	opacity: 0;
+	outline: thick;
+	cursor: inherit;
+	display: block;
+}
