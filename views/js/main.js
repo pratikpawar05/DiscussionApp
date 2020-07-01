@@ -4,11 +4,6 @@ const roomName = $("#room-name");
 var trix = document.querySelector("trix-editor")
 const socket = io();
 
-socket.on("message", (message) => {
-  //console.log(message.text);
-  outputsMessage(message);
-});
-
 $(".openSideBar").on("click", function (e) {
   $(".chat-sidebar").css("display", "block");
   $(".closeSideBar").css("display", "block");
@@ -34,9 +29,10 @@ socket.on("roomUsers", ({
   $("#users").append(items.join(""));
 });
 
-// Message from server
-socket.on("messages", (message) => {
-  outputMessage(message);
+socket.on("message", (message) => {
+  $.each(message, (i, item) => {
+    chatMessages.append(item.message)
+  });
   chatMessages.scrollTop(chatMessages.get(0).scrollHeight);
 });
 
@@ -44,12 +40,12 @@ socket.on("formattedMessage", (message) => {
   chatMessages.append(message)
   chatMessages.scrollTop(chatMessages.get(0).scrollHeight);
 });
+
 //If user uploads the file get it..inside attachment variable
 //Disable from further upload..!!
 var attachment;
 var temp;
 var cc = 0;
-
 document.addEventListener("trix-file-accept", function (event) {
   if (cc != 0) {
     event.preventDefault();
@@ -104,97 +100,6 @@ chatForm.on("submit", function (e) {
 
 });
 
-// Current Output messages
-function outputMessage(message) {
-  if (message.text.length == 1) {
-    chatMessages.append(
-      $('<div class="message">').append(
-        '<p class="meta">' +
-        message.username +
-        "  <span>" +
-        message.time +
-        '</span></p><p class="text">' +
-        message.text[0] +
-        "</p>"
-      )
-    );
-  } else {
-    if (message.text[1].split(".")[1] != "pdf") {
-      chatMessages.append(
-        $('<div class="message">').append(
-          '<p class="meta">' +
-          message.username +
-          "  <span>" +
-          message.time +
-          '</span></p><img src="' +
-          message.text[1] +
-          '"alt="face" height="100" width="100"><p class="text">' +
-          message.text[0] +
-          "</p>"
-        )
-      );
-    } else {
-      // console.log(message.text[1])
-      chatMessages.append(
-        $('<div class="message">').append(
-          '<p class="meta">' +
-          message.username +
-          "<span>" +
-          message.time +
-          '</span></p><iframe src="' +
-          message.text[1] +
-          '"width="100%" height="300px"></iframe><p class="+text+">' +
-          message.text[0] +
-          "</p>"
-        )
-      );
-    }
-  }
-}
-
-//Display Previous Stored messages from database initially
-function outputsMessage(message) {
-  items = [];
-  $.each(message, (i, item) => {
-    if (item.message.split("/")[1] != "home") {
-      items.push(
-        '<div class="message"><p class="meta">' +
-        item.from +
-        "  <span>" +
-        item.date +
-        '</span></p><p class="text">' +
-        item.message +
-        "</p></div>"
-      );
-    } else {
-      var url = item.message.split("/views/")[1];
-      if (url.split(".")[1] == "pdf") {
-        items.push(
-          '<div class="message"><p class="meta">' +
-          item.from +
-          "  <span>" +
-          item.date +
-          '</span></p><iframe src="' +
-          url +
-          '"width="100%" height="300px"></iframe></div>'
-        );
-      } else {
-        items.push(
-          '<div class="message"><p class="meta">' +
-          item.from +
-          "  <span>" +
-          item.date +
-          '</span></p><img src="' +
-          url +
-          '" alt="face" height="100" width="100%"></div>'
-        );
-      }
-    }
-  }); // close each()
-
-  chatMessages.append(items.join(""));
-}
-
 //Try After Some Time
 // // Show A Div For Few Seconds
 // function welcomeMessage(message) {
@@ -209,7 +114,6 @@ function outputsMessage(message) {
 socket.on("alert", (message) => {
   alert(message)
 });
-
 
 // Run On close of the button..!!
 function close_window() {

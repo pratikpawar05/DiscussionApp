@@ -11,6 +11,7 @@ const GroupChatSchema = new Schema({
     message: {
         type: String,
     },
+    
     socketId: {
         type: String,
         default:undefined,

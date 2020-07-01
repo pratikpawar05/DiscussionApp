@@ -49,8 +49,8 @@ io.on("connection", (socket) => {
         socket.emit("message", docs);
         //When User Gets Connected For The First Time
         socket.emit(
-          "messages",
-          formatMessage(user.username, [`Welcome To ${room} Discussion Portal!`])
+          "formattedMessage",
+          formatMessage(user.username, `Welcome To ${room} Discussion Portal!`)
         );
       } else {
         console.log("Error during record fetch : " + err);
@@ -61,64 +61,31 @@ io.on("connection", (socket) => {
   //Notify other users in group about it
   socket.broadcast
     .to(user.room)
-    .emit("messages", formatMessage(user.username, ["Joined The Chat"]));
+    .emit("formattedMessage", formatMessage(user.username, "Joined The Chat"));
 
   // Send users and room info
   io.to(user.room).emit("roomUsers", {
     users: getRoomUsers(user.room),
   });
-
-  //Get user message & respond to all users in room
-  socket.on("chatMessage", (message) => {
-    var file = message[1];
-    var fileName = message[2];
-    var flag = false
-
-    if (file != undefined) {
-      flag = true
-      var path = __dirname + "/storage/image/" + fileName;
-      fs.writeFile(path + "", file, function (err) {
-        if (err) throw err;
-        console.log("Saved!");
-      });
-      var GroupChat = mongoose.model("GroupChat", GroupChats, user.room);
-      GroupChat.collection.insertOne({
-        roomName: user.room,
-        message: path,
-        from: user.username,
-        socketId: socket.id,
-        date:moment().format('MMMM Do YYYY, h:mm:ss a'),
-      }, (err) => {
-        if (!err) console.log("Succesful");
-        else console.log("Error during record insertion : " + err);
-      });
-    }
-
-
-    var GroupChat = mongoose.model("GroupChat", GroupChats, user.room);
-    GroupChat.collection.insertOne({
-      roomName: user.room,
-      message: message[0],
-      from: user.username,
-      socketId: socket.id,
-      date:moment().format('MMMM Do YYYY, h:mm:ss a'),
-    }, (err) => {
-      if (!err) console.log("Succesful");
-      else console.log("Error during record insertion : " + err);
-    });
-
-    //Send the message received from the Users to the collection group chats
-    if (flag == true) {
-      io.to(user.room).emit("messages", formatMessage(user.username, [message[0], "img/" + fileName]));
-    } else {
-      io.to(user.room).emit("messages", formatMessage(user.username, [message[0]]));
-    }
-  });
-
     //Experiment basis of message handling
     socket.on("chat_message", (messageData) => {
+    var GroupChat = mongoose.model("GroupChat", GroupChats, user.room);
+    var temp;
       if(messageData.length==1){
-        io.to(user.room).emit("formattedMessage",createMessage(user.username,messageData[0]));
+        temp=createMessage(user.username,messageData[0])
+        io.to(user.room).emit("formattedMessage",temp);
+          //Insert the message
+          GroupChat.collection.insertOne({
+            roomName: user.room,
+            message: temp,
+            from: user.username,
+            socketId: socket.id,
+            date:moment().format('MMMM Do YYYY, h:mm:ss a'),
+          }, (err) => {
+            if (!err) console.log("Succesfully message saved!!");
+            else console.log("Error during record insertion : " + err);
+          });
+
       }else{
         path = `${__dirname}/storage/${messageData[2]}/${messageData[1]}`;
         fs.writeFile(path + "", messageData[0], function (err) {
@@ -127,17 +94,29 @@ io.on("connection", (socket) => {
           }else{
             temp=createMessage(user.username,undefined,{file:messageData[0],fileName:messageData[1],fileType:messageData[2],leftContent:messageData[3],rightContent:messageData[4]})
             io.to(user.room).emit("formattedMessage",temp)
-            console.log("Saved!");
+            //Insert the message
+            GroupChat.collection.insertOne({
+              roomName: user.room,
+              message: temp,
+              from: user.username,
+              socketId: socket.id,
+              date:moment().format('MMMM Do YYYY, h:mm:ss a'),
+            }, (err) => {
+              if (!err) console.log("Succesfully message saved!!");
+              else console.log("Error during record insertion : " + err);
+            });
+            console.log("Saved!",temp);
           }
         });
       }
+
     });
 
   //When User Left the chat
   socket.on("disconnect", () => {
     io.to(user.room).emit(
-      "messages",
-      formatMessage(user.username, [" Left The Chat "])
+      "formattedMessage",
+      formatMessage(user.username, " Left The Chat ")
     );
     userLeave(socket.id);
     // Send users and room info

@@ -1,12 +1,9 @@
 const moment = require('moment');
 
 //A function which returns an object 
-function formatMessage(username, text) {
-    return {
-        username,
-        text,
-        time: moment().format('MMMM Do YYYY,h:mm a'),
-    };
+function formatMessage(userName, text) {
+    msg=`<div class="message"><p class="meta">${userName} <span>${moment().format('MMMM Do YYYY,h:mm a')}</span></p>${text}</div>`
+    return msg;
 }
 
 function createMessage(userName,message=undefined,{file,fileName,fileType,leftContent,rightContent}={}) {
