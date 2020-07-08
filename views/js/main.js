@@ -16,6 +16,7 @@ $(".closeSideBar").on("click", function (e) {
   $(".chat-sidebar").css("display", "none");
 });
 
+
 // Get room and users
 socket.on("roomUsers", ({
   users
@@ -100,15 +101,21 @@ chatForm.on("submit", function (e) {
 
 });
 
-//Try After Some Time
-// // Show A Div For Few Seconds
-// function welcomeMessage(message) {
-//   chatMessages.append(
-//     setTimeout(function() { $('<div class="message">').append(
-//       '<p class="meta">' + message.username + '  <span>' + message.time +
-//       '</span></p><p class="text">' + message.text + '</p>').fadeOut('fast');
-//     }, 5000));
-// }
+//vertical icon on hover show delete/copy icon/option
+var toggle=0
+$(document).on('click','.meta i',function(e){
+  if(toggle%2==0){
+    $(this).after('<ul style="float:right;margin-right:10px;" class="toggle">\
+    <li class="delete"><i class="fa fa-trash" aria-hidden="true"></i></i>Delete</li>\
+    <li class="copy"><i class="fa fa-copy" aria-hidden="true"></i>Copy</li> \
+  </ul>')
+  toggle+=1
+  }else{
+    $(document).find('p>.toggle').remove();
+    toggle-=1
+  }
+});
+
 
 //If any error ,trigger this
 socket.on("alert", (message) => {

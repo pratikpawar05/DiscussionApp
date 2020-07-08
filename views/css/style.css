@@ -209,6 +209,10 @@ display: none;
 		background:#fff;
 		overflow-x:scroll;
 	  }
+	  .chat-messages .message .meta {
+		font-size: 12px;
+		font-weight: bold;
+	}
 }
 textarea{
 	resize: none;

@@ -80,7 +80,7 @@ io.on("connection", (socket) => {
             message: temp,
             from: user.username,
             socketId: socket.id,
-            date:moment().format('MMMM Do YYYY, h:mm:ss a'),
+            date:moment().utcOffset("+05:30").format('MMMM Do YYYY, h:mm:ss a'),
           }, (err) => {
             if (!err) console.log("Succesfully message saved!!");
             else console.log("Error during record insertion : " + err);
@@ -100,7 +100,7 @@ io.on("connection", (socket) => {
               message: temp,
               from: user.username,
               socketId: socket.id,
-              date:moment().format('MMMM Do YYYY, h:mm:ss a'),
+              date:moment().utcOffset("+05:30").format('MMMM Do YYYY, h:mm:ss a'),
             }, (err) => {
               if (!err) console.log("Succesfully message saved!!");
               else console.log("Error during record insertion : " + err);
@@ -134,7 +134,6 @@ http.listen(3000, (err) => {
     console.log("Not Started");
   }
 });
-
 // Routes For Group Chat App
 app.get("/", (req, res) => {
   res.render("index.ejs", {

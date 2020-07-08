@@ -40,18 +40,19 @@
         </div>
     
         <div class="chat-messages">
-          
         </div>
+        
       </main>
       <!-- <iframe src="/storage/application/Resume.pdf" height="300px" frameborder="1"  allowfullscreen></iframe> -->
       <div class="chat-form-container">
         <form id="chat-form" enctype="multipart/form-data">
-          <input type="hidden" name="content" id="msg" required />
+          <input type="hidden" name="content" id="msg" data-emojiable="true" required />
           <trix-editor
             class="trix-content"
             input="msg"
             placeholder="Enter Your Message..."
             :autofocus="autofocus"
+            
           ></trix-editor>
           <button class="btn"><i class="fas fa-paper-plane"></i>Send</button>
         </form>
@@ -69,9 +70,7 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/trix/1.2.1/trix.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="js/main.js"></script>
-    <!-- Bootstrap cdn links -->
-    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"> -->
-    <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script> -->
+ 
   </body>
 
 </html>
