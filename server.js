@@ -40,13 +40,14 @@ app.use("/storage",express.static(__dirname + "/storage"));
 
 //Socket Complete Logic
 io.on("connection", (socket) => {
-  const user = userJoin(socket.id, username, room);
+  const user = userJoin(socket.id, username, room); 
   socket.join(user.room);
   var GroupChat = mongoose.model("GroupChat", GroupChats, user.room);
   GroupChat.find({},
     (err, docs) => {
       if (!err) {
         socket.emit("message", docs);
+
         //When User Gets Connected For The First Time
         socket.emit(
           "formattedMessage",
@@ -109,7 +110,6 @@ io.on("connection", (socket) => {
           }
         });
       }
-
     });
 
   //When User Left the chat
@@ -134,6 +134,7 @@ http.listen(3000, (err) => {
     console.log("Not Started");
   }
 });
+
 // Routes For Group Chat App
 app.get("/", (req, res) => {
   res.render("index.ejs", {

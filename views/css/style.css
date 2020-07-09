@@ -108,6 +108,7 @@ a {
 	color: var(--dark-color-b);
 	opacity: 0.7;
 	margin-bottom: 7px;
+	position: relative;
 }
 
 .chat-messages .message .meta span {
@@ -212,18 +213,11 @@ display: none;
 	  .chat-messages .message .meta {
 		font-size: 12px;
 		font-weight: bold;
+		
 	}
 }
 textarea{
 	resize: none;
 }
-.btn-file {
-	position: relative;	
-	left: -50px;
-	overflow: hidden;
-	background:none;
-	color:grey;
-	font-size: 20px;
 
-}
 
