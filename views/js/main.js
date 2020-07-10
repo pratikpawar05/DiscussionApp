@@ -166,6 +166,15 @@ $(document).on('mouseup','.copy',function(e){
 socket.on("alert", (message) => {
   // alert(message)
 });
+//Welcome Message ,trigger her
+socket.on('fade-Out-Messages',(message)=>{
+  chatMessages.append(message)
+  temp=chatMessages.find('.message:last')
+  setTimeout(function(){
+  temp.hide('slow',function(e){
+    $(this).remove();
+  });},800);
+});
 
 // Run On close of the button..!!
 function close_window() {

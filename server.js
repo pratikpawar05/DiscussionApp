@@ -50,7 +50,7 @@ io.on("connection", (socket) => {
 
         //When User Gets Connected For The First Time
         socket.emit(
-          "formattedMessage",
+          "fade-Out-Messages",
           formatMessage(user.username, `Welcome To ${room} Discussion Portal!`)
         );
       } else {
@@ -59,10 +59,10 @@ io.on("connection", (socket) => {
     }
   );
 
-  //Notify other users in group about it
+  //Notify other users in group about the join of new member
   socket.broadcast
     .to(user.room)
-    .emit("formattedMessage", formatMessage(user.username, "Joined The Chat"));
+    .emit("fade-Out-Messages", formatMessage(user.username, "Joined The Chat"));
 
   // Send users and room info
   io.to(user.room).emit("roomUsers", {
@@ -134,7 +134,7 @@ socket.on('deleteMessage',(messageId) => {
   //When User Left the chat
   socket.on("disconnect", () => {
     io.to(user.room).emit(
-      "formattedMessage",
+      "fade-Out-Messages",
       formatMessage(user.username, " Left The Chat ")
     );
     userLeave(socket.id);
