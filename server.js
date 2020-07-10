@@ -68,13 +68,12 @@ io.on("connection", (socket) => {
   io.to(user.room).emit("roomUsers", {
     users: getRoomUsers(user.room),
   });
-    //Experiment basis of message handling
-    socket.on("chat_message", (messageData) => {
+    ///Get the message from the client side ..render it & save the message 7 render back the formatted message to user
+    socket.on("chatMessage", (messageData) => {
     var GroupChat = mongoose.model("GroupChat", GroupChats, user.room);
     var temp;
       if(messageData.length==1){
         temp=createMessage(user.username,messageData[0])
-        io.to(user.room).emit("formattedMessage",temp);
           //Insert the message
           GroupChat.collection.insertOne({
             roomName: user.room,
@@ -82,9 +81,14 @@ io.on("connection", (socket) => {
             from: user.username,
             socketId: socket.id,
             date:moment().utcOffset("+05:30").format('MMMM Do YYYY, h:mm:ss a'),
-          }, (err) => {
-            if (!err) console.log("Succesfully message saved!!");
-            else console.log("Error during record insertion : " + err);
+          }, (err,doc) => {
+            if (!err) {
+              io.to(user.room).emit("formattedMessage",temp);
+              myCustomInput=` <input type="hidden" value="${doc.insertedId}">`
+              io.to(user.room).emit("formattedMessage",myCustomInput);
+              console.log("Succesfully message saved!!");
+            }
+            else{ console.log("Error during record insertion : " + err)};
           });
 
       }else{
@@ -94,7 +98,6 @@ io.on("connection", (socket) => {
             io.emit("alert",`could not save the ${messageData[1]} plz try again!!`)
           }else{
             temp=createMessage(user.username,undefined,{file:messageData[0],fileName:messageData[1],fileType:messageData[2],leftContent:messageData[3],rightContent:messageData[4]})
-            io.to(user.room).emit("formattedMessage",temp)
             //Insert the message
             GroupChat.collection.insertOne({
               roomName: user.room,
@@ -102,15 +105,31 @@ io.on("connection", (socket) => {
               from: user.username,
               socketId: socket.id,
               date:moment().utcOffset("+05:30").format('MMMM Do YYYY, h:mm:ss a'),
-            }, (err) => {
-              if (!err) console.log("Succesfully message saved!!");
-              else console.log("Error during record insertion : " + err);
+            }, (err,result) => {
+              if (!err){ 
+                io.to(user.room).emit("formattedMessage",temp)
+                myCustomInput=` <input type="hidden" value="${doc.insertedId}">`
+                io.to(user.room).emit("formattedMessage",myCustomInput);
+                console.log("Succesfully message saved!!"+result)
+            }
+              else{ console.log("Error during record insertion : " + err)};
             });
             console.log("Saved!",temp);
           }
         });
       }
     });
+socket.on('deleteMessage',(messageId) => {
+  GroupChat.findByIdAndDelete(messageId,(err,doc)=>{
+    if (!err){
+      
+      io.emit('alert','Message deleted sucesfully');
+    }
+    else{
+      io.emit('alert','Error deleting message');
+    }
+  });
+});
 
   //When User Left the chat
   socket.on("disconnect", () => {

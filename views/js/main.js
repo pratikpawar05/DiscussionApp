@@ -33,6 +33,8 @@ socket.on("roomUsers", ({
 socket.on("message", (message) => {
   $.each(message, (i, item) => {
     chatMessages.append(item.message)
+    myCustomInput=` <input type="hidden" value="${item._id}">`
+    chatMessages.append(myCustomInput)
   });
   chatMessages.scrollTop(chatMessages.get(0).scrollHeight);
 });
@@ -87,7 +89,7 @@ chatForm.on("submit", function (e) {
     attachment = ''
     $('#chat-form')[0].reset();
     // Emit message to server
-    socket.emit("chat_message", [file, fileName, fileType, leftContent, rightContent]);
+    socket.emit("chatMessage", [file, fileName, fileType, leftContent, rightContent]);
   } else {
     //Only message without atachment
     msg = $('#msg').val()
@@ -96,7 +98,7 @@ chatForm.on("submit", function (e) {
     attachment = ''
     $('#chat-form')[0].reset();
     // Emit message to server
-    socket.emit("chat_message", [msg]);
+    socket.emit("chatMessage", [msg]);
   }
 
 });
@@ -130,11 +132,16 @@ $(document).on('click',function(e){
 });
 
 
-//On click delete the textbox 
+//On click delete the div or message 
 $(document).on('click','.delete',function(e){
-  console.log('del')
+  messageDiv=$(this).parent().parent().parent()
+  $('body').hide().fadeIn(2000);
+  messageId=messageDiv.next('input').val()
+  messageDiv.next('input').remove()
+  messageDiv.remove()
+  socket.emit('deleteMessage',messageId)
 });
-//On click copy the textbox text
+//On click copy the div/message text
 $(document).on('click','.copy',function(e){
   // console.log($(this).closest('div').children().nextAll()[0]);
   var clipboard = new ClipboardJS('.copy');
@@ -157,7 +164,7 @@ $(document).on('mouseup','.copy',function(e){
 
 //If any error ,trigger this
 socket.on("alert", (message) => {
-  alert(message)
+  // alert(message)
 });
 
 // Run On close of the button..!!
